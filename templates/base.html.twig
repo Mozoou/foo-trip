@@ -1,54 +1,72 @@
 <!DOCTYPE html>
-<html>
+<html lang="en" class="h-full">
     <head>
         <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>{% block title %}Foo Trip{% endblock %}</title>
         <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>✈️</text></svg>">
-        <style>
-            body { font-family: sans-serif; margin: 0; padding: 0; }
-            nav { background: #333; padding: 10px 20px; }
-            nav a { color: white; text-decoration: none; margin-right: 15px; }
-            nav a:hover { text-decoration: underline; }
-            .container { max-width: 1100px; margin: 20px auto; padding: 0 20px; }
-            .flash-success { background: #d4edda; border: 1px solid #c3e6cb; color: #155724; padding: 10px; margin-bottom: 15px; border-radius: 4px; }
-            .flash-error { background: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; padding: 10px; margin-bottom: 15px; border-radius: 4px; }
-            table { border-collapse: collapse; width: 100%; }
-            table th, table td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-            table th { background: #f2f2f2; }
-            a.btn { display: inline-block; padding: 6px 12px; background: #333; color: white; text-decoration: none; border-radius: 4px; margin: 2px; }
-            a.btn-danger { background: #c0392b; }
-            a.btn-secondary { background: #666; }
-            button.btn { padding: 6px 12px; background: #c0392b; color: white; border: none; border-radius: 4px; cursor: pointer; }
-            .card { border: 1px solid #ddd; border-radius: 6px; overflow: hidden; margin-bottom: 15px; }
-            .card-body { padding: 15px; }
-            .destination-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
-            .card img { width: 100%; height: 200px; object-fit: cover; display: block; }
-            form label { display: block; font-weight: bold; margin-top: 10px; }
-            form input, form textarea { width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
-            form button[type=submit] { margin-top: 15px; padding: 10px 20px; background: #333; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 1em; }
-            .errors { color: #c0392b; list-style: none; padding: 0; margin: 4px 0; font-size: 0.9em; }
-        </style>
         {% block stylesheets %}{% endblock %}
-        {% block javascripts %}{% endblock %}
+        {% block javascripts %}
+            {% block importmap %}{{ importmap('app') }}{% endblock %}
+        {% endblock %}
     </head>
-    <body>
-        <nav>
-            <a href="{{ path('app_home') }}">✈ Foo Trip</a>
-            {% if is_granted('ROLE_ADMIN') %}
-                <a href="{{ path('app_admin_destination_index') }}">Admin</a>
-                <a href="{{ path('app_logout') }}">Logout</a>
-            {% else %}
-                <a href="{{ path('app_login') }}">Admin Login</a>
-            {% endif %}
+    <body class="h-full bg-slate-50 text-slate-800 flex flex-col min-h-screen">
+
+        {# ── Navbar ── #}
+        <nav class="bg-slate-900 shadow-lg">
+            <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex items-center justify-between h-16">
+                    <a href="{{ path('app_home') }}" class="flex items-center gap-2 text-white font-bold text-xl hover:text-sky-400 transition-colors">
+                        <span class="text-2xl">✈</span> Foo Trip
+                    </a>
+                    <div class="flex items-center gap-4">
+                        <a href="{{ path('app_home') }}" class="text-slate-300 hover:text-white text-sm font-medium transition-colors">
+                            Destinations
+                        </a>
+                        {% if is_granted('ROLE_ADMIN') %}
+                            <a href="{{ path('app_admin_destination_index') }}" class="text-slate-300 hover:text-white text-sm font-medium transition-colors">
+                                Backoffice
+                            </a>
+                            <a href="{{ path('app_logout') }}" class="bg-slate-700 hover:bg-slate-600 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors">
+                                Logout
+                            </a>
+                        {% else %}
+                            <a href="{{ path('app_login') }}" class="bg-sky-500 hover:bg-sky-600 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors">
+                                Admin Login
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
         </nav>
-        <div class="container">
-            {% for message in app.flashes('success') %}
-                <div class="flash-success">{{ message }}</div>
-            {% endfor %}
-            {% for message in app.flashes('error') %}
-                <div class="flash-error">{{ message }}</div>
-            {% endfor %}
+
+        {# ── Flash messages ── #}
+        {% set flashes_success = app.flashes('success') %}
+        {% set flashes_error   = app.flashes('error') %}
+        {% if flashes_success or flashes_error %}
+            <div class="max-w-6xl mx-auto w-full px-4 sm:px-6 lg:px-8 pt-4">
+                {% for message in flashes_success %}
+                    <div class="flex items-center gap-3 bg-emerald-50 border border-emerald-200 text-emerald-800 px-4 py-3 rounded-lg mb-2 text-sm">
+                        <span class="text-emerald-500">✓</span> {{ message }}
+                    </div>
+                {% endfor %}
+                {% for message in flashes_error %}
+                    <div class="flex items-center gap-3 bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg mb-2 text-sm">
+                        <span class="text-red-500">✕</span> {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        {# ── Main content ── #}
+        <main class="flex-1 max-w-6xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
             {% block body %}{% endblock %}
-        </div>
+        </main>
+
+        {# ── Footer ── #}
+        <footer class="bg-slate-900 text-slate-400 text-sm text-center py-6 mt-auto">
+            © {{ "now"|date("Y") }} Foo Trip — Honeymoon Destinations
+        </footer>
+
     </body>
 </html>

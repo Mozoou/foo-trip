@@ -1,25 +1,53 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Destinations - Foo Trip{% endblock %}
+{% block title %}Honeymoon Destinations - Foo Trip{% endblock %}
 
 {% block body %}
-    <h1>Honeymoon Destinations</h1>
+    {# ── Hero ── #}
+    <div class="text-center mb-12">
+        <h1 class="text-4xl font-bold text-slate-900 mb-3">Find Your Perfect Getaway</h1>
+        <p class="text-slate-500 text-lg max-w-xl mx-auto">
+            Discover handpicked honeymoon destinations around the world, tailored for unforgettable moments.
+        </p>
+    </div>
 
     {% if destinations is empty %}
-        <p>No destinations available yet.</p>
+        <div class="text-center py-24 text-slate-400">
+            <div class="text-6xl mb-4">🌍</div>
+            <p class="text-xl font-medium">No destinations available yet.</p>
+            <p class="text-sm mt-2">Check back soon or add one from the admin panel.</p>
+        </div>
     {% else %}
-        <div class="destination-grid">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {% for destination in destinations %}
-                <div class="card">
-                    <img src="{{ destination.image }}" alt="{{ destination.name }}" onerror="this.src='https://placehold.co/400x200?text=No+Image'">
-                    <div class="card-body">
-                        <h2 style="margin-top: 0;">{{ destination.name }}</h2>
-                        <p>{{ destination.description|length > 120 ? destination.description|slice(0, 120) ~ '...' : destination.description }}</p>
-                        <p><strong>Price:</strong> {{ destination.price }} €</p>
-                        <p><strong>Duration:</strong> {{ destination.duration }}</p>
-                        <a class="btn" href="{{ path('app_destination_show', {id: destination.id}) }}">View Details</a>
+                <article class="bg-white rounded-2xl shadow-sm hover:shadow-xl transition-shadow duration-300 overflow-hidden flex flex-col group">
+                    <div class="relative overflow-hidden h-52">
+                        <img
+                            src="{{ destination.image }}"
+                            alt="{{ destination.name }}"
+                            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                            onerror="this.src='https://placehold.co/600x300?text=No+Image'"
+                        >
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+                        <span class="absolute bottom-3 left-3 bg-white/90 backdrop-blur-sm text-slate-800 text-xs font-semibold px-3 py-1 rounded-full">
+                            {{ destination.duration }}
+                        </span>
                     </div>
-                </div>
+
+                    <div class="p-5 flex flex-col flex-1">
+                        <h2 class="text-xl font-bold text-slate-900 mb-1">{{ destination.name }}</h2>
+                        <p class="text-slate-500 text-sm flex-1 mb-4 leading-relaxed">
+                            {{ destination.description|length > 110 ? destination.description|slice(0, 110) ~ '…' : destination.description }}
+                        </p>
+                        <div class="flex items-center justify-between mt-auto">
+                            <span class="text-sky-600 font-bold text-lg">{{ destination.price }} €</span>
+                            <a href="{{ path('app_destination_show', {id: destination.id}) }}"
+                               class="bg-sky-500 hover:bg-sky-600 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors">
+                                View Details →
+                            </a>
+                        </div>
+                    </div>
+                </article>
             {% endfor %}
         </div>
     {% endif %}

@@ -3,24 +3,61 @@
 {% block title %}Admin Login - Foo Trip{% endblock %}
 
 {% block body %}
-    <div style="max-width: 400px; margin: 40px auto;">
-        <h1>Admin Login</h1>
-
-        {% if error %}
-            <div class="flash-error">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
-        {% endif %}
-
-        <form method="post" class="card">
-            <div>
-                <label for="username">Username</label>
-                <input type="text" id="username" name="_username" value="{{ last_username }}" autocomplete="username" required autofocus>
+    <div class="min-h-[60vh] flex items-center justify-center">
+        <div class="w-full max-w-md">
+            <div class="text-center mb-8">
+                <div class="text-5xl mb-3">🔐</div>
+                <h1 class="text-3xl font-bold text-slate-900">Admin Login</h1>
+                <p class="text-slate-500 mt-2 text-sm">Sign in to manage destinations</p>
             </div>
-            <div>
-                <label for="password">Password</label>
-                <input type="password" id="password" name="_password" autocomplete="current-password" required>
+
+            {% if error %}
+                <div id="error-message" class="flex items-center gap-2 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl mb-6 text-sm">
+                    <span>✕</span> {{ error.messageKey|trans(error.messageData, 'security') }}
+                </div>
+            {% endif %}
+
+            <div class="bg-white shadow-sm rounded-2xl p-8">
+                <form method="post">
+                    <div class="mb-5">
+                        <label for="username" class="block text-sm font-semibold text-slate-700 mb-1.5">Email address</label>
+                        <input
+                            type="text"
+                            id="username"
+                            name="_username"
+                            value="{{ last_username }}"
+                            autocomplete="username"
+                            required
+                            autofocus
+                            class="w-full border border-slate-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-transparent transition"
+                            placeholder="admin@foo-trip.com"
+                        >
+                    </div>
+
+                    <div class="mb-6">
+                        <label for="password" class="block text-sm font-semibold text-slate-700 mb-1.5">Password</label>
+                        <input
+                            type="password"
+                            id="password"
+                            name="_password"
+                            autocomplete="current-password"
+                            required
+                            class="w-full border border-slate-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-transparent transition"
+                            placeholder="••••••••"
+                        >
+                    </div>
+
+                    <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+                    <button type="submit" class="w-full bg-sky-500 hover:bg-sky-600 text-white font-semibold py-3 rounded-xl transition-colors text-sm">
+                        Sign in
+                    </button>
+                </form>
             </div>
-            <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
-            <button type="submit">Sign in</button>
-        </form>
+
+            <p class="text-center text-slate-400 text-xs mt-6">
+                <a href="{{ path('app_home') }}" class="hover:text-sky-500 transition-colors">← Back to public site</a>
+            </p>
+        </div>
     </div>
 {% endblock %}
