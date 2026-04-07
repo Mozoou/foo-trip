@@ -1,0 +1,24 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Destinations - Foo Trip{% endblock %}
+
+{% block body %}
+    <h1>Honeymoon Destinations</h1>
+
+    {% if destinations is empty %}
+        <p>No destinations available yet.</p>
+    {% else %}
+        <div class="destination-grid">
+            {% for destination in destinations %}
+                <div class="card">
+                    <img src="{{ destination.image }}" alt="{{ destination.name }}" onerror="this.src='https://placehold.co/400x200?text=No+Image'">
+                    <h2>{{ destination.name }}</h2>
+                    <p>{{ destination.description|length > 120 ? destination.description|slice(0, 120) ~ '...' : destination.description }}</p>
+                    <p><strong>Price:</strong> {{ destination.price }} €</p>
+                    <p><strong>Duration:</strong> {{ destination.duration }}</p>
+                    <a class="btn" href="{{ path('app_destination_show', {id: destination.id}) }}">View Details</a>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endblock %}
