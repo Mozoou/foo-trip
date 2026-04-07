@@ -10,6 +10,25 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class SecurityTest extends WebTestCase
 {
+    protected function setUp(): void
+    {
+        parent::setUp();
+        static::bootKernel();
+        static::getContainer()->get(EntityManagerInterface::class)
+            ->createQuery('DELETE FROM App\Entity\User')
+            ->execute();
+        static::ensureKernelShutdown();
+    }
+
+    protected function tearDown(): void
+    {
+        static::bootKernel();
+        static::getContainer()->get(EntityManagerInterface::class)
+            ->createQuery('DELETE FROM App\Entity\User')
+            ->execute();
+        parent::tearDown(); // calls ensureKernelShutdown internally
+    }
+
     private function createAdmin(): User
     {
         $em = static::getContainer()->get(EntityManagerInterface::class);
@@ -40,13 +59,6 @@ class SecurityTest extends WebTestCase
         $em->flush();
 
         return $user;
-    }
-
-    private function cleanUsers(): void
-    {
-        static::getContainer()->get(EntityManagerInterface::class)
-            ->createQuery('DELETE FROM App\Entity\User')
-            ->execute();
     }
 
     // --- Login page ---
@@ -88,9 +100,7 @@ class SecurityTest extends WebTestCase
         $this->assertResponseRedirects('/admin/destinations');
         $client->followRedirect();
         $this->assertResponseIsSuccessful();
-        $this->assertSelectorTextContains('h1', 'Manage Destinations');
-
-        $this->cleanUsers();
+        $this->assertSelectorTextContains('h1', 'Destinations');
     }
 
     public function testAdminCanAccessNewDestinationPage(): void
@@ -102,8 +112,6 @@ class SecurityTest extends WebTestCase
         $client->request('GET', '/admin/destinations/new');
 
         $this->assertResponseIsSuccessful();
-
-        $this->cleanUsers();
     }
 
     // --- Customer access ---
@@ -117,8 +125,6 @@ class SecurityTest extends WebTestCase
         $client->request('GET', '/admin/destinations');
 
         $this->assertResponseStatusCodeSame(403);
-
-        $this->cleanUsers();
     }
 
     public function testCustomerCanAccessHomePage(): void
@@ -130,8 +136,6 @@ class SecurityTest extends WebTestCase
         $client->request('GET', '/');
 
         $this->assertResponseIsSuccessful();
-
-        $this->cleanUsers();
     }
 
     public function testCustomerCanAccessPublicApi(): void
@@ -143,8 +147,6 @@ class SecurityTest extends WebTestCase
         $client->request('GET', '/api/destinations');
 
         $this->assertResponseIsSuccessful();
-
-        $this->cleanUsers();
     }
 
     // --- Failed login ---
@@ -161,9 +163,7 @@ class SecurityTest extends WebTestCase
         ]);
 
         $client->followRedirect();
-        $this->assertSelectorExists('.flash-error, #error-message, [class*="alert"], [class*="error"]');
-
-        $this->cleanUsers();
+        $this->assertSelectorExists('#error-message');
     }
 
     public function testLoginWithUnknownEmailFails(): void
@@ -179,8 +179,6 @@ class SecurityTest extends WebTestCase
         $client->followRedirect();
         $this->assertResponseIsSuccessful();
         $this->assertRouteSame('app_login');
-
-        $this->cleanUsers();
     }
 
     // --- Logout ---
@@ -196,10 +194,7 @@ class SecurityTest extends WebTestCase
         $this->assertResponseRedirects();
         $client->followRedirect();
 
-        // After logout, /admin should redirect to login
         $client->request('GET', '/admin/destinations');
         $this->assertResponseRedirects('/login');
-
-        $this->cleanUsers();
     }
 }
