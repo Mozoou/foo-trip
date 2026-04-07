@@ -56,7 +56,7 @@ class ExportDestinationsCommand extends Command
             return Command::FAILURE;
         }
 
-        fputcsv($handle, ['name', 'description', 'price', 'duration']);
+        fputcsv($handle, ['name', 'description', 'price', 'duration'], escape: '\\');
 
         foreach ($destinations as $destination) {
             fputcsv($handle, [
@@ -64,7 +64,7 @@ class ExportDestinationsCommand extends Command
                 $destination['description'],
                 $destination['price'],
                 $destination['duration'],
-            ]);
+            ], escape: '\\');
         }
 
         fclose($handle);
