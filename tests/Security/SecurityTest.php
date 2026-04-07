@@ -76,12 +76,14 @@ class SecurityTest extends WebTestCase
 
     // --- Unauthenticated access ---
 
-    public function testUnauthenticatedUserIsRedirectedFromAdmin(): void
+    public function testUnauthenticatedUserIsRedirectedToHomeFromAdmin(): void
     {
         $client = static::createClient();
         $client->request('GET', '/admin/destinations');
 
-        $this->assertResponseRedirects('/login');
+        $this->assertResponseRedirects('/');
+        $client->followRedirect();
+        $this->assertSelectorExists('.flash-error, [class*="bg-red"]');
     }
 
     // --- Admin login & access ---
@@ -103,6 +105,20 @@ class SecurityTest extends WebTestCase
         $this->assertSelectorTextContains('h1', 'Destinations');
     }
 
+    public function testCustomerIsRedirectedToHomeAfterLogin(): void
+    {
+        $client = static::createClient();
+        $this->createCustomer();
+
+        $client->request('GET', '/login');
+        $client->submitForm('Sign in', [
+            '_username' => UserFixtures::CUSTOMER_EMAIL,
+            '_password' => UserFixtures::CUSTOMER_PASSWORD,
+        ]);
+
+        $this->assertResponseRedirects('/');
+    }
+
     public function testAdminCanAccessNewDestinationPage(): void
     {
         $client = static::createClient();
@@ -116,7 +132,7 @@ class SecurityTest extends WebTestCase
 
     // --- Customer access ---
 
-    public function testCustomerCannotAccessAdminArea(): void
+    public function testCustomerIsRedirectedToHomeFromAdmin(): void
     {
         $client = static::createClient();
         $customer = $this->createCustomer();
@@ -124,7 +140,9 @@ class SecurityTest extends WebTestCase
         $client->loginUser($customer);
         $client->request('GET', '/admin/destinations');
 
-        $this->assertResponseStatusCodeSame(403);
+        $this->assertResponseRedirects('/');
+        $client->followRedirect();
+        $this->assertSelectorExists('[class*="bg-red"]');
     }
 
     public function testCustomerCanAccessHomePage(): void
@@ -195,6 +213,6 @@ class SecurityTest extends WebTestCase
         $client->followRedirect();
 
         $client->request('GET', '/admin/destinations');
-        $this->assertResponseRedirects('/login');
+        $this->assertResponseRedirects('/');
     }
 }

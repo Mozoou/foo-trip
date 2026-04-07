@@ -27,12 +27,14 @@
                             <a href="{{ path('app_admin_destination_index') }}" class="text-slate-300 hover:text-white text-sm font-medium transition-colors">
                                 Backoffice
                             </a>
+                        {% endif %}
+                        {% if is_granted('ROLE_USER') %}
                             <a href="{{ path('app_logout') }}" class="bg-slate-700 hover:bg-slate-600 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors">
                                 Logout
                             </a>
                         {% else %}
                             <a href="{{ path('app_login') }}" class="bg-sky-500 hover:bg-sky-600 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors">
-                                Admin Login
+                                Login
                             </a>
                         {% endif %}
                     </div>

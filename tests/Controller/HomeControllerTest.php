@@ -69,11 +69,13 @@ class HomeControllerTest extends WebTestCase
         $em->flush();
     }
 
-    public function testAdminRedirectsToLogin(): void
+    public function testAdminRedirectsToHomeWithFlash(): void
     {
         $client = static::createClient();
         $client->request('GET', '/admin/destinations');
 
-        $this->assertResponseRedirects('/login');
+        $this->assertResponseRedirects('/');
+        $client->followRedirect();
+        $this->assertSelectorExists('[class*="bg-red"]');
     }
 }
