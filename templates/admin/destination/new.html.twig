@@ -1,0 +1,23 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New Destination - Admin{% endblock %}
+
+{% block body %}
+    <h1>New Destination</h1>
+    <a class="btn btn-secondary" href="{{ path('app_admin_destination_index') }}">&larr; Back to list</a>
+
+    <div class="card" style="margin-top: 20px;">
+        {{ form_start(form) }}
+            {% for field in form %}
+                {% if not field.rendered %}
+                    <div>
+                        {{ form_label(field) }}
+                        {{ form_widget(field) }}
+                        {{ form_errors(field) }}
+                    </div>
+                {% endif %}
+            {% endfor %}
+            <button type="submit">Create</button>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}
