@@ -1,0 +1,26 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Admin Login - Foo Trip{% endblock %}
+
+{% block body %}
+    <div style="max-width: 400px; margin: 40px auto;">
+        <h1>Admin Login</h1>
+
+        {% if error %}
+            <div class="flash-error">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+        {% endif %}
+
+        <form method="post" class="card">
+            <div>
+                <label for="username">Username</label>
+                <input type="text" id="username" name="_username" value="{{ last_username }}" autocomplete="username" required autofocus>
+            </div>
+            <div>
+                <label for="password">Password</label>
+                <input type="password" id="password" name="_password" autocomplete="current-password" required>
+            </div>
+            <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+            <button type="submit">Sign in</button>
+        </form>
+    </div>
+{% endblock %}
